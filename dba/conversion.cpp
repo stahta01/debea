@@ -257,7 +257,7 @@ convert(const char* s, int& i, int base) {
   char *ptr = NULL;
   while (isspace(*s) && *s != '\0')
     s++;
-  if (s == '\0')
+  if (*s == '\0')
     throw ConversionException("cannot convert " + (string)s);
   errno = 0;
   i = strtol(s,&ptr, base);
@@ -270,7 +270,7 @@ convert(const char* s, long& i, int base) {
   char *ptr = NULL;
   while (isspace(*s) && *s != '\0')
     s++;
-  if (s == '\0')
+  if (*s == '\0')
     throw ConversionException("cannot convert " + (string)s);
   errno = 0;
   i = strtol(s,&ptr, base);
@@ -283,7 +283,7 @@ void
 convert(const char* s, double& d, const char* pDecPointRepl) {
   while (isspace(*s) && *s != '\0')
     s++;
-  if (s == '\0')
+  if (*s == '\0')
     throw ConversionException("cannot convert " + (string)s);
   errno = 0;
   if (pDecPointRepl != NULL) {
