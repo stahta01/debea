@@ -1,0 +1,249 @@
+AC_PREREQ(2.53)
+AC_INIT([dba],[1.4.1],[lmichalski@sf.net])
+AC_CONFIG_HEADERS(dba/config.h)
+AC_CANONICAL_SYSTEM
+AC_BUILDER_OPTIONS
+
+AC_ARG_ENABLE(sql_debug,[--enable-sql_debug enable sql debugging])
+if test "$enable_sql_debug" == "yes"; then
+  SQL_DEBUG=1
+else
+  SQL_DEBUG=0
+fi
+
+DOC_TYPE="doc"
+AC_ARG_WITH(doc_section,[--with-doc_section=<type>  web/old/doc (doc is default)],[DOC_TYPE=$withval])
+AC_SUBST(DOC_TYPE)
+
+AC_ARG_ENABLE(dba_compat_1_0,[--enable-dba_compat_1_0 enable 1.0 compability mode])
+if test "$enable_dba_compat_1_0" == "yes"; then
+  DBA_COMPAT_1_0=1
+  DBA_COMPAT_GCC_FLAGS="-DDBA_COMPAT_1_0"
+else
+  DBA_COMPAT_1_0=0
+  DBA_COMPAT_GCC_FLAGS=""
+fi
+AC_SUBST(DBA_COMPAT_GCC_FLAGS)
+
+# Runtime library loading
+HAVE_DL_FUNCS=0
+HAVE_SHL_FUNCS=0
+dnl the test is a bit complicated because we check for dlopen() both with
+dnl and without -ldl and we also try to find shl_load() if there is no
+dnl dlopen() on this system
+AC_CHECK_FUNCS(dlopen,
+[
+  AC_DEFINE(HAVE_DLOPEN)
+  HAVE_DL_FUNCS=1
+],
+[
+  AC_CHECK_LIB(dl, dlopen,
+  [
+    AC_DEFINE(HAVE_DLOPEN)
+    HAVE_DL_FUNCS=1
+    DL_LINK=" -ldl$DL_LINK"
+  ],
+  [
+    AC_CHECK_FUNCS(shl_load,
+    [
+      AC_DEFINE(HAVE_SHL_LOAD)
+      HAVE_SHL_FUNCS=1
+    ],
+    [
+      AC_CHECK_LIB(shl_load, dld,
+      [
+        HAVE_SHL_FUNCS=1
+        DL_LINK=" -ldld$DL_LINK"
+      ])
+    ])
+  ])
+])
+
+AC_SUBST(DL_LINK)
+LDFLAGS="$LDFLAGS $DL_LINK"
+
+dnl check also for dlerror()
+if test "$HAVE_DL_FUNCS" = 1; then
+  AC_CHECK_FUNCS(dlerror,
+    AC_DEFINE(HAVE_DLERROR),
+    [
+      AC_CHECK_LIB(dl, dlerror, AC_DEFINE(HAVE_DLERROR))
+    ]
+  )
+fi
+
+DLL_SUPPORT=1
+if test "$HAVE_DL_FUNCS" = 0; then
+  if test "$HAVE_SHL_FUNCS" = 0; then
+    AC_MSG_WARN([Missing dynamic loading support, only CSV support can be compiled])
+    DLL_SUPPORT=0
+  fi
+fi
+
+
+# Postgresql driver
+PGSQL_CONFIG=pg_config
+AC_ARG_WITH(pg-config,
+[[  --with-pg-config=FILE     Use the given path to pg-config when determining
+                            PostgresSQL configuration; defaults to "pg-config"]],
+[
+    if test "$withval" != "yes" -a "$withval" != ""; then
+        PGSQL_CONFIG=$withval
+    fi
+])
+
+AC_DEFUN([PSQL_TEST],
+[
+  AC_REQUIRE([AC_PROG_AWK])
+  AC_MSG_CHECKING([PostgreSQL version])
+  if pgsql_version=`$PGSQL_CONFIG --version`; then
+    AC_MSG_RESULT([$pgsql_version])
+    PGSQL=1
+  else
+    AC_MSG_RESULT([not found])
+    AC_MSG_ERROR([PostgreSQL is required. Try --with-pg-config.])
+  fi
+])
+
+
+AC_ARG_ENABLE(pgsql,[--enable-pgsql compile pgsql driver])
+if test "$enable_pgsql" == "yes"; then
+  if test "$DLL_SUPPORT" == "0"; then
+    AC_MSG_ERROR([Dynamic library loading support is needed for plugins])
+  else 
+    PSQL_TEST
+    PGSQL_CFLAGS=-I`${PGSQL_CONFIG} --includedir`
+    PGSQL_LIBS=-L`${PGSQL_CONFIG} --libdir` 
+    PGSQL_LD=-lpq
+  
+    AC_SUBST(PGSQL_LIBS)
+    AC_SUBST(PGSQL_CFLAGS)
+    AC_SUBST(PGSQL_LD)
+    PGSQL=1;
+  fi
+else
+  PGSQL=0;
+fi
+
+# Sqlite driver
+AC_ARG_ENABLE(sqlite,[--enable-sqlite compile sqlite driver])
+if test "$enable_sqlite" == "yes"; then
+  if test "$DLL_SUPPORT" == "0"; then
+    AC_MSG_ERROR([Dynamic library loading support is needed for plugins])
+  else 
+    AC_ARG_WITH(sqlite-headers,[--with-sqlite-headers=<dir> specify where sqlite headers are installed],[SQLITE_HEADERS=-I$withval])
+    AC_ARG_WITH(sqlite-lib,[--with-sqlite-lib=<dir> specify where sqlite libs are installed],[SQLITE_LIBS=-L$withval])
+    SQLITE_LD=-lsqlite
+    AC_SUBST(SQLITE_HEADERS)
+    AC_SUBST(SQLITE_LIBS)
+    AC_SUBST(SQLITE_LD)
+    SQLITE=1;
+  fi
+else
+  SQLITE=0;
+fi
+
+# Sqlite3 driver
+AC_ARG_ENABLE(sqlite3,[--enable-sqlite3 compile sqlite3 driver])
+if test "$enable_sqlite3" == "yes"; then
+  if test "$DLL_SUPPORT" == "0"; then
+    AC_MSG_ERROR([Dynamic library loading support is needed for plugins])
+  else
+    AC_ARG_WITH(sqlite3-headers,[--with-sqlite3-headers=<dir> specify where sqlite headers are installed],[SQLITE3_HEADERS=-I$withval])
+    AC_ARG_WITH(sqlite3-lib,[--with-sqlite3-lib=<dir> specify where sqlite libs are installed],[SQLITE3_LIBS=-L$withval])
+    AC_SUBST(SQLITE3_HEADERS)
+    AC_SUBST(SQLITE3_LIBS)
+    SQLITE3_LD=-lsqlite3
+    AC_SUBST(SQLITE3_LD)
+    SQLITE3=1
+  fi
+else
+  SQLITE3=0
+fi
+
+# unixODBC driver
+ODBC_CONFIG=iodbc-config
+AC_ARG_WITH(iodbc-config,
+[[  --with-iodbc-config=FILE     Use the given path to odbc_config when determining
+                            unixODBC configuration; defaults to "iodbc-config"]],
+[
+    if test "$withval" != "yes" -a "$withval" != ""; then
+        ODBC_CONFIG=$withval
+    fi
+])
+
+AC_DEFUN([ODBC_TEST],
+[
+  AC_REQUIRE([AC_PROG_AWK])
+  AC_MSG_CHECKING([iODBC version])
+  odbc_version=`$ODBC_CONFIG --version`;
+  if test -n $odbc_version; then
+    AC_MSG_RESULT([$odbc_version])
+    ODBC=1
+  else
+    AC_MSG_RESULT([not found])
+    AC_MSG_ERROR([iODBC devel package is required. Try --with-iodbc-config.])
+  fi
+])
+
+AC_ARG_ENABLE(odbc,[--enable-odbc compile ODBC dba driver (default: no)])
+if test "$enable_odbc" = yes; then
+  if test "$DLL_SUPPORT" == "0"; then
+    AC_MSG_ERROR([Dynamic library loading support is needed for plugins])
+  else 
+    ODBC_TEST
+    ODBC_CFLAGS=`${ODBC_CONFIG} --cflags`
+    ODBC_LIBS=`${ODBC_CONFIG} --libs` 
+  
+    AC_SUBST(ODBC_LIBS)
+    AC_SUBST(ODBC_CFLAGS)
+    ODBC="1";
+  fi
+else
+  ODBC="0";
+fi
+
+# CSV archive
+AC_ARG_ENABLE(csv,[--enable-csv compile csv archive support])
+if test "$enable_csv" == "yes"; then
+  CSV=1
+else
+  CSV=0
+fi
+
+# xml archive
+AC_ARG_ENABLE(xml,[--enable-xml compile xml archive support])
+if test "$enable_xml" == "yes"; then
+AC_BUILDER_CUSTOM_LIB([2.6.11],[xml2],[--cflags],[--libs],[xml2],
+  [
+    XML=1
+  ],
+  [
+    XML=0
+    AC_MSG_ERROR([libxml2 library not found. XML support disabled])
+  ]
+)
+else
+  XML=0
+fi
+AC_SUBST(XML)
+
+AC_BAKEFILE([m4_include(autoconf_inc.m4)])
+AC_OUTPUT([
+  Makefile 
+  dba-config
+  examples/Makefile
+  examples/bind/Makefile 
+  examples/bindstb/Makefile 
+  examples/csv_manual/Makefile 
+  examples/csv_auto/Makefile 
+  examples/filter/Makefile 
+  examples/idlock/Makefile 
+  examples/inheritance/Makefile 
+  examples/quickstart/Makefile 
+  examples/sublists/Makefile 
+  examples/transaction/Makefile 
+  examples/xmlsimple/Makefile 
+  examples/queries/Makefile 
+])
+

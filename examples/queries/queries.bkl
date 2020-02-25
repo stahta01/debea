@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<makefile>
+  <include file="../../config.bkl"/>    
+    
+  
+  <exe id="queries" template="example">
+    <sources>queries.cpp</sources>
+  </exe>  
+</makefile>

@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<makefile>
+  <include file="../../config.bkl"/>    
+    
+  
+  <exe id="bind" template="example">
+    <sources>bind.cpp</sources>
+  </exe>  
+</makefile>

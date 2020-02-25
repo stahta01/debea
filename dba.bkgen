@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<bakefile-gen>
+
+  <input>
+    dba.bkl
+    examples/*.bkl
+    examples/*/*.bkl
+  </input>
+
+  <add-formats>
+    autoconf,msvc,msvc6prj,mingw
+  </add-formats>
+</bakefile-gen>

@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<makefile>
+  <include file="../../config.bkl"/>    
+    
+  
+  <exe id="idlock" template="example">
+    <sources>idlock.cpp</sources>
+  </exe>  
+</makefile>

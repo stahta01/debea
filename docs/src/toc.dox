@@ -1,0 +1,152 @@
+/**
+@mainpage
+
+@if Cond_DOC
+  @note <b>This is a copy of documentation from http://debea.net. You will find latest news and releases there</b>
+@endif
+
+@section dba_overview Overview
+
+C++ Database Access library (Debea) is a collection of interfaces that easily allows
+you to map C++ objects to relations in various SQL and file databases.
+
+By removing hand-written SQL queries for serialization of various C++ objects you can speed up development of applications that needs to store and load their data in SQL database. Another positive side effect of using this library is that you will always have SQL schema stricty related to C++ logical model.
+
+This library does not try to completly remove SQL language from C++ code - you will still need it to do more complex things that just storing and retrieving data.
+
+Library is using plugin architecture for various SQL RDBMS support and provides one,
+simple interface for query processing and object serialization.
+
+Supported database formats:
+- sqlite3 (native)
+- postgresql (native)
+- all databases that can be accessed using ODBC or iODBC
+- csv file format
+- xml file format
+
+Library was tested on following platforms:
+- gcc 3.3.6, Linux 2.6.20 and later
+- VC++ 2003, VC++ 2005, MSW (Win98, Win2000/XP) and later
+
+New native plugins for other databases can be added by implementing simple interface. Section @ref dba_dev_driver describes how to add new database backend to Debea.
+
+See @ref dba_quickstart and @ref dba_examples sections for examples of library usage
+
+@page dba_quickstart Quick start
+
+Below are list of tasks that demonstrates the simplest usage scenario of library taken from @ref dba_example_quickstart example. Examples of more advanced features can be found in @ref dba_examples section.
+
+@dontinclude quickstart.cpp
+To store class in database we have to derive from dba::Storeable and declare that we add table with
+list of members that we want to store (store table):
+@skip class
+@until };
+
+DECLARE_STORE_TABLE is a macro that declares store table for a class. In a cpp file we have to define what member of class will be stored in a database and how:
+@skip BEGIN
+@until END
+
+We have to define SQL statements for SQL database schema:
+@skip begin
+@until end
+
+We created additional field in foo_table named "id". This is required by dba::Storeable class.
+debea_object_count table is needed for dba::GenericFetcher to store last assigned id.
+
+First we load sqlite3 plugin and setup database:
+@skip load
+@until foo_create
+
+Now we can load and store object of Foo class this way:
+@skip Foo
+@until Foo is Foo
+*/
+
+/**
+@page dba_dev_driver Adding new driver to debea
+
+It commonly tooks 2-3 days to write driver for dba, because interface is very simple. 
+In order to modify build system you have to install tools for creating project files. 
+You can find requirements and description of those tools in @ref dba_dev_build section.
+
+To implement new driver you have to implement dba:;Database interface, which contains
+following classes:
+
+- dba::Database
+- dba::DbConnection
+- dba::DbResult
+- dba::DbColumn
+
+Then you should modify build system to recognize nedded libraries and add 
+compiler and linker flag.
+
+For MSW you should create enviroment variable that points to headers and libraries 
+that are needed for driver compilation and add new template to syslibs.bkl like this:
+
+@code
+<template id="postgres">
+  <if cond="FORMAT!='autoconf'">
+    <if cond="TOOLSET=='win32'">
+      <lib-path>"$(DOLLAR)($(ENV_VAR)POSTGRESQL)$(DIRSEP)lib$(DIRSEP)ms"</lib-path>
+      <include>"$(DOLLAR)($(ENV_VAR)POSTGRESQL)$(DIRSEP)include"</include>
+    </if>
+    <sys-lib>libpq</sys-lib>
+    <sys-lib>wsock32</sys-lib>
+  </if>
+  <if cond="FORMAT=='autoconf'">
+    <sys-lib>pq</sys-lib>
+  </if>
+</template>
+@endcode
+
+Then you have to modify dba.bkl and add option for driver compilation and "module" section.
+This will enable MSW project files generation for driver using bakefile.
+
+For Unix there is more work to do. In addition to changes above you have to modify configure.in 
+to detect needed libraries and add options for new driver.
+
+Last important step is to run standard CppUnit regression tests for driver to make sure that
+things works correctly. Things you nedd to do is to modify "testbase" template in dba.bkl by adding 
+new preprocessor symbol that will enable test case compilations and then add test cases to test/main.cpp 
+file. 
+
+After all changes you should regnerate project files and recompile library and programs.
+*/
+
+/**
+@page dba_dev_build Build system
+
+/Yet to be written/
+*/
+
+/**
+@page dba_examples Examples
+
+Below is a list of examples from examples directory. You can
+click and see source code of every example. All of them can be
+compiled and run - to do it go to "examples" directory and open 
+project file or issue make/nmake command.
+
+-# @ref dba_example_queries : 
+How to parameterize and send SQL statements
+-# @ref dba_example_quickstart : 
+Example used for @ref dba_quickstart section of documentation
+-# @ref dba_example_inheritance :
+This example shows how to construct store tables for every class in inheritance tree
+-# @ref dba_example_bind :
+This example shows how to read adittional data when serializing objects
+-# @ref dba_example_bindstb :
+This example shows how to transfer store table from one object to another
+-# @ref dba_example_filter :
+This example shows how to create custom store filter for field
+-# @ref dba_example_idlock :
+This example shows how to clone existing object in database
+-# @ref dba_example_sublists :
+This example shows how to use BIND_COL and BIND_CLA macros to store member collections of objects
+-# @ref dba_example_csv_auto :
+This example shows how to serialize objects in csv format using names from store table
+-# @ref dba_example_csv_manual :
+This example shows how to serialize objects in csv format using custom names
+-# @ref dba_example_transaction :
+This example shows how to use transactions
+*/

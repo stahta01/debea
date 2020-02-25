@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<makefile>
+  <include file="../../config.bkl"/>    
+    
+  
+  <exe id="csv_auto" template="csv_example" cond="CSV=='1'">
+    <sources>csv_auto.cpp</sources>
+  </exe>  
+</makefile>

@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<makefile>
+  <include file="../../config.bkl"/>    
+  
+  <exe id="quickstart" template="example">
+      <sources>quickstart.cpp</sources>
+  </exe>  
+</makefile>

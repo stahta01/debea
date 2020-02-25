@@ -1,0 +1,4 @@
+<?xml version="1.0" ?>
+<makefile>
+  <include file="presets/baseprj.bkl" once="1"/>
+</makefile>

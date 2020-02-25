@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<makefile>
+  <include file="../../config.bkl"/>    
+    
+  
+  <exe id="inheritance" template="example">
+    <sources>inheritance.cpp</sources>
+  </exe>  
+</makefile>

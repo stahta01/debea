@@ -1,0 +1,164 @@
+PROJECT_NUMBER         = $(PROJECT_NUMBER)
+PROJECT_NAME           = $(PROJECT_NAME)
+OUTPUT_LANGUAGE        = English
+ALWAYS_DETAILED_SEC    = NO
+INLINE_INHERITED_MEMB  = NO
+SHOW_USED_FILES        = YES
+MAX_INITIALIZER_LINES  = 0
+
+
+FULL_PATH_NAMES        = NO
+#STRIP_FROM_PATH        = 
+SHORT_NAMES            = NO
+JAVADOC_AUTOBRIEF      = YES
+INHERIT_DOCS           = YES
+TAB_SIZE               = 2
+SUBGROUPING            = YES
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_METHODS  = NO
+HIDE_UNDOC_MEMBERS     = YES
+HIDE_UNDOC_CLASSES     = YES
+HIDE_FRIEND_COMPOUNDS  = YES
+HIDE_IN_BODY_DOCS      = NO
+INTERNAL_DOCS          = NO
+CASE_SENSE_NAMES       = YES
+HIDE_SCOPE_NAMES       = YES
+SHOW_INCLUDE_FILES     = YES
+INLINE_INFO            = NO
+SORT_BRIEF_DOCS        = YES
+SORT_BY_SCOPE_NAME     = NO
+GENERATE_TODOLIST      = NO
+GENERATE_TESTLIST      = NO
+GENERATE_BUGLIST       = NO
+GENERATE_DEPRECATEDLIST= YES
+
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES
+WARN_FORMAT            = "$file:$line: $text"
+
+
+#---------------------------------------------------------------------------
+# Configuration options related to the dot tool   
+#---------------------------------------------------------------------------
+CLASS_DIAGRAMS         = YES
+HIDE_UNDOC_RELATIONS   = YES
+HAVE_DOT               = YES
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+UML_LOOK               = NO
+TEMPLATE_RELATIONS     = NO
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+CALL_GRAPH             = NO
+GRAPHICAL_HIERARCHY    = YES
+DOT_IMAGE_FORMAT       = png
+DOT_PATH               = 
+DOTFILE_DIRS           = 
+MAX_DOT_GRAPH_DEPTH    = 1000
+GENERATE_LEGEND        = YES
+DOT_CLEANUP            = YES
+#---------------------------------------------------------------------------
+# Configuration::additions related to the search engine   
+#---------------------------------------------------------------------------
+SEARCHENGINE           = YES
+
+#TAGFILES              =
+ALLEXTERNALS           = NO
+EXTERNAL_GROUPS        = YES
+PERL_PATH              = /usr/bin/perl
+
+#---------------------------------------------------------------------------
+# configuration options related to the HTML output
+#---------------------------------------------------------------------------
+GENERATE_HTML          = YES
+HTML_FILE_EXTENSION    = .html
+HTML_HEADER            = $(SRCDIR)/docs/src/web_header.html
+#IMAGE_PATH             = src
+HTML_STYLESHEET        = 
+HTML_ALIGN_MEMBERS     = YES
+GENERATE_HTMLHELP      = NO
+TOC_EXPAND             = NO
+DISABLE_INDEX          = YES
+ENUM_VALUES_PER_LINE   = 4
+GENERATE_TREEVIEW      = NO
+TREEVIEW_WIDTH         = 250
+
+GENERATE_LATEX        = NO
+HTML_OUTPUT           = .
+
+#---------------------------------------------------------------------------
+# Project related configuration options
+#---------------------------------------------------------------------------
+OUTPUT_DIRECTORY       = $(BUILDDIR)/html/
+ENABLED_SECTIONS       = $(SECTIONS)
+#---------------------------------------------------------------------------
+# configuration options related to the input files
+#---------------------------------------------------------------------------
+EXAMPLE_PATH = $(SRCDIR)/examples
+EXAMPLE_RECURSIVE=yes
+
+#IMAGE_PATH             = src
+
+INPUT                  =  $(SRCDIR)/docs/src/toc.dox \
+    $(SRCDIR)/docs/src/tutorial.dox \
+    $(SRCDIR)/docs/src/examples.dox \
+    $(SRCDIR)/dba/archive.h \
+    $(SRCDIR)/dba/archiveexception.h \
+    $(SRCDIR)/dba/bindedvar.h \
+    $(SRCDIR)/dba/bool_filter.h \
+    $(SRCDIR)/dba/collectionfilter.h \
+    $(SRCDIR)/dba/connectstring.h \
+    $(SRCDIR)/dba/convspec.h \
+    $(SRCDIR)/dba/csv.h \
+    $(SRCDIR)/dba/database.h \
+    $(SRCDIR)/dba/datetime_filter.h \
+    $(SRCDIR)/dba/dba.h \
+    $(SRCDIR)/dba/dbplugin.h \
+    $(SRCDIR)/dba/dbupdate.h \
+    $(SRCDIR)/dba/dbupdatescriptparser.h \
+    $(SRCDIR)/dba/defs.h \
+    $(SRCDIR)/dba/double_filter.h \
+    $(SRCDIR)/dba/exception.h \
+    $(SRCDIR)/dba/genericfetcher.h \
+    $(SRCDIR)/dba/idlocker.h \
+    $(SRCDIR)/dba/int_filter.h \
+    $(SRCDIR)/dba/istream.h \
+    $(SRCDIR)/dba/memarchive.h \
+    $(SRCDIR)/dba/ostream.h \
+    $(SRCDIR)/dba/plugininfo.h \
+    $(SRCDIR)/dba/sharedsqlarchive.h \
+    $(SRCDIR)/dba/single.h \
+    $(SRCDIR)/dba/sql.h \
+    $(SRCDIR)/dba/sqlarchive.h \
+    $(SRCDIR)/dba/sqlidfetcher.h \
+    $(SRCDIR)/dba/sqlistream.h \
+    $(SRCDIR)/dba/sqlostream.h \
+    $(SRCDIR)/dba/sqlutils.h \
+    $(SRCDIR)/dba/stdfilters.h \
+    $(SRCDIR)/dba/stddeque.h \
+    $(SRCDIR)/dba/stdlist.h \
+    $(SRCDIR)/dba/stdmultiset.h \
+    $(SRCDIR)/dba/stdset.h \
+    $(SRCDIR)/dba/stlutils.h \
+    $(SRCDIR)/dba/stdvector.h \
+    $(SRCDIR)/dba/storeable.h \
+    $(SRCDIR)/dba/storeablefilter.h \
+    $(SRCDIR)/dba/string_filter.h \
+    $(SRCDIR)/dba/stream.h 
+                          
+#---------------------------------------------------------------------------
+# Configuration::additions related to external references
+#---------------------------------------------------------------------------
+#GENERATE_TAGFILE       = dba.tag
+#TAGFILES               = 
+
+#---------------------------------------------------------------------------
+# configuration options related to the HTML output
+#---------------------------------------------------------------------------
+HTML_FOOTER            = $(SRCDIR)/docs/src/doxygen_footer.html

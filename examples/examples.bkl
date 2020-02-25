@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<makefile>
+  <template id="example">
+    <dir>$(id)</dir>
+    <dependency-of>all</dependency-of>-->
+  </template>
+    
+  <subproject id="bind" template="example"/>
+  <subproject id="bindstb" template="example"/>
+  <subproject id="csv_manual" template="example"/>
+  <subproject id="csv_auto" template="example"/>
+  <subproject id="filter" template="example"/>
+  <subproject id="idlock" template="example"/>
+  <subproject id="inheritance" template="example"/>
+  <subproject id="quickstart" template="example"/>
+  <subproject id="sublists" template="example"/>
+  <subproject id="transaction" template="example"/>
+  <subproject id="xmlsimple" template="example"/>
+  <subproject id="queries" template="example"/>
+</makefile>

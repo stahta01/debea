@@ -1,0 +1,131 @@
+<?xml version="1.0" ?>
+<makefile>
+  <if cond="FORMAT=='autoconf'">
+    <option name="dba_CXXFLAGS"/>
+    <option name="dba_LIBS"/>
+    <option name="dbacsv_CXXFLAGS"/>
+    <option name="dbacsv_LIBS"/>
+    <option name="dbaxml_CXXFLAGS"/>
+    <option name="dbaxml_LIBS"/>
+    <option name="dbatest_CXXFLAGS"/>
+    <option name="dbatest_LIBS"/>
+
+    <template id="dba-lib-static">
+      <cxxflags>$(dba_CXXFLAGS)</cxxflags>
+    </template>
+
+    <template id="dba-lib-dynamic">
+      <cxxflags>$(dba_CXXFLAGS)</cxxflags>
+    </template>
+
+    <template id="dba-exe-static" template="dba-lib-static">
+      <ldlibs>$(dba_LIBS)</ldlibs>
+    </template>
+
+    <template id="dba-exe-dynamic" template="dba-lib-dynamic">
+      <ldlibs>$(dba_LIBS)</ldlibs>
+    </template>
+
+    <template id="dba-csv-lib-static">
+      <cxxflags>$(dbacsv_CXXFLAGS)</cxxflags>
+    </template>
+
+    <template id="dba-csv-lib-dynamic">
+      <cxxflags>$(dbacsv_CXXFLAGS)</cxxflags>
+    </template>
+    
+    <template id="dba-csv-exe-static" template="dba-csv-lib-static">
+      <ldlibs>$(dbacsv_LIBS)</ldlibs>
+    </template>
+
+    <template id="dba-csv-exe-dynamic" template="dba-csv-lib-static">
+      <ldlibs>$(dbacsv_LIBS)</ldlibs>
+    </template>
+
+    <template id="dba-xml-lib-static">
+      <cxxflags>$(dbaxml_CXXFLAGS)</cxxflags>
+    </template>
+
+    <template id="dba-xml-lib-dynamic">
+      <cxxflags>$(dbaxml_CXXFLAGS)</cxxflags>
+    </template>
+    
+    <template id="dba-xml-exe-static" template="dba-xml-lib-static">
+      <ldlibs>$(dbaxml_LIBS)</ldlibs>
+    </template>
+
+    <template id="dba-xml-exe-dynamic" template="dba-xml-lib-static">
+      <ldlibs>$(dbaxml_LIBS)</ldlibs>
+    </template>
+
+    <template id="dbatest-lib-static">
+      <cxxflags>$(dbatest_CXXFLAGS)</cxxflags>
+    </template>
+
+    <template id="dbatest-exe-static" template="dbatest-lib-static">
+      <ldlibs>$(dbatest_LIBS)</ldlibs>
+    </template>
+  </if>
+  <if cond="FORMAT!='autoconf'">
+    <if cond="FORMAT_SUPPORTS_CONDITIONS=='0'">
+      <!--
+        You can change default settings by set var DBA_COMPAT_1_0 _BEFORE_ inclue this file eg.:
+        <set var="DBA_COMPAT_1_0">0</set>
+        <include file="presets/dba.bkl"/>
+        
+        if set this after include this file some defines may be incorrect (eg. wxUSE_GUI)
+      -->
+      <set var="DBA_COMPAT_1_0" overwrite="0">0</set>
+    </if>
+    <if cond="FORMAT_SUPPORTS_CONDITIONS=='1'">
+      <option name="DBA_COMPAT_1_0">
+        <values>0,1</values>
+        <default-value>0</default-value>
+      </option>
+    </if>
+    <set var="dba_1_0_compat_flag">
+      <if cond="DBA_COMPAT_1_0=='1'">DBA_COMPAT_1_0</if>
+    </set>
+    <template id="dba_base">
+      <define>$(dba_1_0_compat_flag)</define>
+    </template>
+    <template id="dba-lib-static" template="dba_base">
+    </template>
+    <template id="dba-lib-dynamic" template="dba_base">
+      <dll-link>dba</dll-link>
+    </template>
+    <template id="dba-exe-static" template="dba_base">
+      <static-link>dba</static-link>
+    </template>
+    <template id="dba-exe-dynamic" template="dba_base">
+      <dll-link>dba</dll-link>
+    </template>
+    <template id="dba-csv-lib-static" template="dba-lib-static">
+    </template>
+    <template id="dba-csv-exe-static" template="dba-exe-static">
+      <static-link>dbacsv</static-link>
+    </template>
+    <template id="dba-csv-lib-dynamic" template="dba-lib-dynamic">
+      <dll-link>dbacsv</dll-link>
+    </template>
+    <template id="dba-csv-exe-dynamic" template="dba-exe-dynamic">
+      <dll-link>dbacsv</dll-link>
+    </template>
+    <template id="dba-xml-lib-static" template="dba-lib-static,libxml2-lib">
+    </template>
+    <template id="dba-xml-exe-static" template="dba-exe-static,libxml2-exe">
+      <static-link>dbaxml</static-link>
+    </template>
+    <template id="dba-xml-lib-dynamic" template="dba-lib-dynamic,libxml2-lib">
+      <dll-link>dbaxml</dll-link>
+    </template>
+    <template id="dba-xml-exe-dynamic" template="dba-exe-dynamic,libxml2-exe">
+      <dll-link>dbaxml</dll-link>
+    </template>
+    <template id="dbatest-lib-static" template="dba-lib-static">
+    </template>
+    <template id="dbatest-exe-static" template="dba-exe-static">
+      <static-link>dbatest</static-link>
+    </template>
+  </if>
+</makefile>

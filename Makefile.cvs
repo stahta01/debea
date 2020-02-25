@@ -1,0 +1,15 @@
+all:
+	bakefilize
+	bakefile_gen -f autoconf -d dba.bkgen
+	autoheader
+	aclocal $(DEBEA_ACLOCAL_FLAGS)
+	autoconf
+
+clean:
+	rm -f *~ Makefile Makefile.in autoconf_inc.m4 \
+                 aclocal.m4 configure INSTALL config.guess \
+                 config.sub install-sh .bakefile_gen.state
+	find examples -name "Makefile.in" -o -name "autoconf_inc.m4" |xargs rm 
+	rm -rf autom4te.cache 
+
+rebuild: clean all

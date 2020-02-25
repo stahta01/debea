@@ -1,0 +1,433 @@
+<?xml version="1.0"?>
+<makefile>
+  <include file="config.bkl" once="1"/>
+  
+  <set var="LIBSOURCES" hints="files">
+    dba/archive.cpp
+    dba/bool_filter.cpp
+    dba/bindedvar.cpp
+    dba/connectstring.cpp
+    dba/connectstringparser.cpp
+    dba/conversion.cpp
+    dba/convspec.cpp
+    dba/database.cpp
+    dba/datetime_filter.cpp
+    dba/dbplugin.cpp
+    dba/dbupdate.cpp
+    dba/dbupdatescriptparser.cpp
+    dba/defs.cpp
+    dba/double_filter.cpp
+    dba/exception.cpp
+    dba/fileutils.cpp
+    dba/filtermapper.cpp
+    dba/genericfetcher.cpp
+    dba/idlocker.cpp
+    dba/int_filter.cpp
+    dba/istream.cpp
+    dba/localechanger.cpp
+    dba/memarchive.cpp
+    dba/membertree.cpp
+    dba/ostream.cpp
+    dba/sharedsqlarchive.cpp
+    dba/sqlarchive.cpp
+    dba/sqlistream.cpp
+    dba/sqlutils.cpp
+    dba/sqlostream.cpp
+    dba/sql.cpp
+    dba/storeable.cpp
+    dba/storeablefilter.cpp
+    dba/stream.cpp
+    dba/string_filter.cpp
+  </set>
+
+  <set var="LIBHEADERS" hints="files">
+    dba/archive.h
+    dba/archiveexception.h
+    dba/bindedvar.h
+    dba/bool_filter.h
+    dba/collectionfilter.h
+    dba/connectstring.h
+    dba/connectstringparser.h
+    dba/conversion.h
+    dba/convspec.h
+    dba/csv.h
+    dba/database.h
+    dba/datetime_filter.h
+    dba/dba.h
+    dba/dbplugin.h
+    dba/dbupdate.h
+    dba/dbupdatescriptparser.h
+    dba/defs.h
+    dba/double_filter.h
+    dba/exception.h
+    dba/fileutils.h
+    dba/filtermapper.h
+    dba/genericfetcher.h
+    dba/idlocker.h
+    dba/int_filter.h
+    dba/istream.h
+    dba/localechanger.h
+    dba/memarchive.h
+    dba/membertree.h
+    dba/ostream.h
+    dba/plugininfo.h
+    dba/shared_ptr.h
+    dba/sharedsqlarchive.h
+    dba/single.h
+    dba/sqlarchive.h
+    dba/sqlidfetcher.h
+    dba/sqlistream.h
+    dba/sqlutils.h
+    dba/sqlostream.h
+    dba/sql.h
+    dba/stddeque.h
+    dba/stdfilters.h
+    dba/stdlist.h
+    dba/stdmultiset.h
+    dba/stdset.h
+    dba/stdvector.h
+    dba/stlutils.h
+    dba/storeable.h
+    dba/storeablefilter.h
+    dba/storeablelist.h
+    dba/stream.h
+    dba/string_filter.h
+    dba/xmlarchive.h
+    dba/xmlerrorhandler.h
+    dba/xmlexception.h
+    dba/xmlistream.h
+    dba/xmlostream.h
+  </set>
+
+  <template id="dbabase">
+    <name>dba</name>
+    <sources>$(LIBSOURCES)</sources>-->
+    <!-- headers to show in VC -->
+    <msvc-headers>$(LIBHEADERS)</msvc-headers>
+    <define>$(sql_debug_def)</define>
+    <define>$(1_0_compat)</define>
+    <include>$(SRCDIR)</include>
+    <include>dba</include>
+  </template>
+
+  <lib id="libdba_static" template="dbabase" template_append="lib" cond="SHARED=='0'">
+  </lib>
+
+  <dll id="libdba_dynamic" template="dbabase" template_append="dll" cond="SHARED=='1'">
+    <namedll>dba</namedll>
+    <!-- first release new interface -->
+    <so_version>4.0.0</so_version>
+  </dll>
+
+  <set var="MSVC6PRJ_MERGED_TARGETS">libdba=libdba_static+libdba_dynamic</set>
+
+  <!-- modules linked with static version of libdba -->
+  <template id="modulebase_static" template="dyndll">
+    <include>$(SRCDIR)</include>
+    <library>libdba_static</library>
+    <define>$(sql_debug_def)</define>
+  </template>
+  
+  <template id="postgres_files">
+    <sources>
+      dba/postgres.cpp
+    </sources>
+    <msvc-headers>
+      dba/postgres.h
+    </msvc-headers>
+  </template>
+  
+  <module id="dbapgsql_static" template="modulebase_static,postgres_files,postgres" cond="PGSQL=='1' and SHARED=='0'">
+    <namedll>dbapgsql-static</namedll>
+  </module>
+
+  <template id="sqlite3_files">
+    <sources>
+      dba/sqllite3.cpp
+    </sources>
+    <msvc-headers>
+      dba/sqllite3.h
+    </msvc-headers>
+  </template>
+  
+  <module id="dbasqlite3_static" template="modulebase_static,sqlite3_files,sqlite3" cond="SQLITE3=='1' and SHARED=='0'">
+    <namedll>dbasqlite3-static</namedll>
+  </module>
+  
+  <template id="odbc_files">
+    <sources>
+      dba/odbc.cpp
+    </sources>
+    <msvc-headers>
+      dba/odbc.h
+    </msvc-headers>
+  </template>
+  
+  <module id="dbaodbc_static" template="modulebase_static,odbc_files,odbc" cond="ODBC=='1' and SHARED=='0'">
+    <namedll>dbaodbc-static</namedll>
+  </module>
+
+
+  <template id="dbacsv_base">
+    <name>dbacsv</name>
+    <include>$(SRCDIR)</include>
+    <sources>
+      dba/csv.cpp
+    </sources>
+  	<msvc-headers>
+      dba/csv.h
+	  </msvc-headers>
+    <define>$(1_0_compat)</define>
+  </template>
+  
+  <lib id="dbacsv_static" template="dbacsv_base" template_append="lib" cond="CSV=='1' and SHARED=='0'">
+  </lib>
+
+  <dll id="dbacsv_dynamic" template="dbacsv_base" template_append="dll" cond="CSV=='1' and SHARED=='1'">
+    <library>libdba_dynamic</library>
+    <namedll>dbacsv</namedll>
+    <so_version>2.0.0</so_version>
+  </dll>
+  
+  <set var="MSVC6PRJ_MERGED_TARGETS" append="1">dbacsv=dbacsv_static+dbacsv_dynamic</set>
+
+  <template id="dbaxml_base" template="libxml2-lib">
+    <name>dbaxml</name>
+    <include>$(SRCDIR)</include>
+    <sources>
+      dba/xmlarchive.cpp
+      dba/xmlerrorhandler.cpp
+      dba/xmlexception.cpp
+      dba/xmlistream.cpp
+      dba/xmlostream.cpp
+      dba/xmlutils.cpp
+    </sources>
+    <msvc-headers>
+      dba/xmlarchive.h
+      dba/xmlerrorhandler.h
+      dba/xmlexception.h
+      dba/xmlistream.h
+      dba/xmlostream.h
+      dba/xmlutils.h
+    </msvc-headers>
+  </template>
+  
+  <lib id="dbaxml_static" template="dbaxml_base" template_append="lib" cond="XML=='1' and SHARED=='0'">
+  </lib>
+
+  <dll id="dbaxml_dynamic" template="dbaxml_base,libxml2-exe" template_append="dll" cond="XML=='1' and SHARED=='1'">
+    <library>libdba_dynamic</library>
+    <namedll>dbaxml</namedll>
+    <so_version>0.0.0</so_version>
+  </dll>
+  
+  <set var="MSVC6PRJ_MERGED_TARGETS" append="1">dbaxml=dbaxml_static+dbaxml_dynamic</set>
+  
+  
+  <!-- modules linked with shared version of libdba -->
+  <template id="modulebase_dynamic" template="dyndll">
+    <include>$(SRCDIR)</include>
+    <library>libdba_dynamic</library>
+  </template>
+  
+  <module id="dbapgsql" template="modulebase_dynamic,postgres_files,postgres" cond="PGSQL=='1' and SHARED=='1'">
+    <namedll>dbapgsql</namedll>
+  </module>
+
+  <module id="dbasqlite3" template="modulebase_dynamic,sqlite3_files,sqlite3" cond="SQLITE3=='1' and SHARED=='1'">
+    <namedll>dbasqlite3</namedll>
+  </module>
+
+  <module id="dbaodbc" template="modulebase_dynamic,odbc_files,odbc" cond="ODBC=='1' and SHARED=='1'">
+    <namedll>dbaodbc</namedll>
+  </module>
+
+  <set var="MSVC6PRJ_MERGED_TARGETS" append="1">sqlite3=dbasqlite3_static+dbasqlite3</set>
+  <set var="MSVC6PRJ_MERGED_TARGETS" append="1">pgsql=dbapgsql_static+dbapgsql</set>
+  <set var="MSVC6PRJ_MERGED_TARGETS" append="1">odbc=dbaodbc_static+dbaodbc</set>
+
+  <!-- cppunit test -->
+  <set var="TESTLIB_SOURCES" hint="files">
+    test/csvtestcase.cpp
+    test/filterstestcase.cpp
+    test/databaseconnection.cpp
+    test/dbplugintestsuite.cpp
+    test/db_basic.cpp
+    test/archive_storeable.cpp
+    test/archive_lists.cpp
+    test/sqlarchive_basic.cpp
+    test/sqlarchive_lists.cpp
+    test/sharedsqlarchive_tests.cpp
+    test/dbplugin_bugs.cpp
+    test/dbplugin_test.cpp
+    test/testobject.cpp
+    test/utils.cpp
+  </set>
+
+  <set var="TESTLIB_HEADERS" hint="files">
+    test/csvtestcase.h
+    test/databaseconnection.h
+    test/dbplugintestsuite.h
+    test/db_basic.h
+    test/filterstestcase.h      
+    test/archive_storeable.h
+    test/archive_lists.h
+    test/sqlarchive_basic.h
+    test/sqlarchive_lists.h
+    test/sql_queries.h
+    test/sharedsqlarchive_tests.h
+    test/dbplugin_bugs.h
+    test/dbplugin_test.h
+    test/testobject.h
+    test/utils.h
+  </set>
+
+  <lib id="dbatestlib" template="lib,libxml2-lib" template_append="cppunit" cond="TESTS=='1'">
+    <sources>$(TESTLIB_SOURCES)</sources>
+    <msvc-headers>$(TESTLIB_HEADERS)</msvc-headers>
+    <headers>$(TESTLIB_HEADERS)</headers>
+    <install-headers-to>$(INCLUDEDIR)/dba</install-headers-to>
+    <install-to>$(LIBDIR)</install-to>
+    <include>$(SRCDIR)</include>
+    <include>dba</include>
+    <name>dbatest</name>
+    <define>$(1_0_compat)</define>
+    <define>$(define_shared)</define>
+    <define>$(substituteFromDict(CSV,{'0':'','1':'TEST_CSV'}))</define>
+  </lib>
+
+  <template id="dbaexe_base">
+    <app-type>console</app-type>
+    <include>$(SRCDIR)</include>
+    <include>dba</include>
+    <define>$(substituteFromDict(PGSQL,{'0':'','1':'TEST_POSTGRES'}))</define>
+    <define>$(substituteFromDict(SQLITE3,{'0':'','1':'TEST_SQLITE3'}))</define>
+    <define>$(substituteFromDict(ODBC,{'0':'','1':'TEST_ODBC'}))</define>
+    <define>$(substituteFromDict(CSV,{'0':'','1':'TEST_CSV'}))</define>
+    <define>$(1_0_compat)</define>
+    <library>dbatestlib</library>
+  </template>
+  
+  <template id="testbase" template="dbaexe_base" template_append="cppunitexe">
+    <sources>
+      test/connectstringtestcase.cpp
+      test/main.cpp
+      test/sqlparamparsertestcase.cpp
+      test/stdfilters_test.cpp
+      test/xmltestcase.cpp
+    </sources>
+    <msvc-headers>
+      test/connectstringtestcase.h
+      test/sqlparamparsertestcase.h
+      test/stdfilters_test.h
+      test/xmltestcase.h
+    </msvc-headers>
+    <define>$(define_shared)</define>
+  </template>
+  
+  <exe id="dba_test_base_static" template="testbase" cond="SHARED=='0' and TESTS=='1'">
+    <nameexe>dba_test_base_static</nameexe>
+    <library>libdba_static</library>
+    <library>$(CSVLIB_STATIC)</library>
+  </exe>
+
+  <exe id="dba_test_xml_static" template="testbase" template_append="libxml2-exe" cond="SHARED=='0' and TESTS=='1' and XML=='1'">
+    <nameexe>dba_test_xml_static</nameexe>
+    <library>libdba_static</library>
+    <library>$(XMLLIB_STATIC)</library>
+    <!-- needed for gdb -->
+    <ldflags>-lpthread</ldflags>
+  </exe>
+
+  <exe id="dba_test_dynamic" template="testbase" cond="SHARED=='1' and TESTS=='1'">
+    <nameexe>dba_test_dynamic</nameexe>
+    <library>libdba_dynamic</library>
+    <library>$(CSVLIB_DYNAMIC)</library>
+    <library>$(XMLLIB_DYNAMIC)</library>
+  </exe>
+
+  <set var="MSVC6PRJ_MERGED_TARGETS" append="1">dba_test=dba_test_static+dba_test_dynamic</set>
+
+  <!-- set ENABLED_SECTIONS of doxygen documentation based on configure/nmake setings-->
+  <set var="DOX_SECTIONS">
+    <if cond="DOC_TYPE=='doc'">Cond_DOC</if>
+    <if cond="DOC_TYPE=='web'">Cond_WEB</if>
+  </set>
+  
+  <doxygen-docs id="docs" cond="DOCS=='1'">
+    <config-file>docs/dba.doxyfile</config-file>
+    <srcdir>
+      $(SRCDIR)/docs/src
+    </srcdir>
+    <html-dir>
+      html
+    </html-dir>
+    <cond_sections>
+      $(DOX_SECTIONS)
+    </cond_sections>
+    <!--    <headers>
+      $(LIBHEADERS)
+    </headers>-->
+    <install-to>$(DATADIR)/doc/dba/html</install-to>
+  </doxygen-docs>
+  
+  
+  <!-- headers to install -->
+  <headers>
+    <files>$(LIBHEADERS)</files>
+  </headers>
+
+  <!-- unix config script -->
+  <config-script>
+    <files>dba-config</files>
+  </config-script>
+
+  <shared-files>
+    <srcdir>$(SRCDIR)$(DIRSEP)bakefile</srcdir>
+    <files>dba.bkl</files>
+    <install-to>$(DATADIR)$(DIRSEP)bakefile$(DIRSEP)presets</install-to>
+  </shared-files>
+  
+  <!-- installation (win32 specific) -->
+  <set var="MODULES"/>
+
+  <!-- append modules with -static suffix if modules are build against static version of libdba 
+       or without suffix if build against dll version of libdba
+  -->
+  <set var="mod_shared">
+    <if cond="SHARED=='0'">-static</if>
+  </set>
+  <set var="MODULES" append="1">$(substituteFromDict(PGSQL,{'0':'','1':'dbapgsql$(mod_shared)'}))</set>
+  <set var="MODULES" append="1">$(substituteFromDict(SQLITE3,{'0':'','1':'dbasqlite3$(mod_shared)'}))</set>
+  <set var="MODULES" append="1">$(substituteFromDict(ODBC,{'0':'','1':'dbaodbc$(mod_shared)'}))</set>
+
+  
+  <set var="CSVLIB">
+    <if cond="CSV=='1'">dbacsv</if>
+    <if cond="CSV=='0'"></if>
+  </set>
+
+  <set var="XMLLIB">
+    <if cond="XML=='1'">dbaxml</if>
+    <if cond="XML=='0'"></if>
+  </set>
+
+  <win32-lib-install id="win32_install">
+    <include-subdir>dba</include-subdir>
+    <include-files>$(LIBHEADERS)</include-files>
+    <libs>dba $(CSVLIB) $(XMLLIB)</libs>
+    <dlls>dba $(CSVLIB) $(XMLLIB)</dlls>
+    <modules>$(MODULES)</modules>
+  </win32-lib-install>
+
+  <set var="TESTSLIB">
+    <if cond="TESTS=='1'">dbatest</if>
+    <if cond="TESTS=='0'"></if>
+  </set>
+
+  <win32-lib-install id="testlib_install">
+    <include-subdir>dba$(DIRSEP)test</include-subdir>
+    <include-files>$(TESTLIB_HEADERS)</include-files>
+    <libs>$(TESTSLIB)</libs>
+  </win32-lib-install>
+</makefile>

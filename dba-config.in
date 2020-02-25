@@ -1,0 +1,82 @@
+#!/bin/sh
+
+prefix=@prefix@
+CXX="@CXX@"
+
+usage()
+{
+    cat <<EOF
+Usage: dba-config [--prefix] [--version] [--debug]
+                  [--libs] [--cxxflags]
+                  [--csv-libs] [--csv-cxxflags]                  
+                  [--xml-libs] [--xml-cxxflags]
+
+
+dba-config returns configuration information about the installed
+version of dba and its plugins. It may be used to query its 
+installation directories and linker flags for core library and plugins
+
+--prefix:   print dir where lib is installed
+--version:  print version of library
+--cxxflags: print compiler flags for base library
+--libs:     print linker flags for base library
+--csv-cxxflags: print compiler flags for csv archive
+--csv-libs:     print linker flags for csv archive
+--xml-cxxflags: print compiler flags for xml archive
+--xml-libs:     print linker flags for xml archive
+
+EOF
+
+    exit $1
+}
+
+
+if test $# -eq 0; then
+    usage 1 1>&2
+fi
+
+while test $# -gt 0; do
+  case $1 in
+    --prefix)
+      echo $prefix
+      ;;
+    --version)
+      echo "1.4.2";
+      ;;
+    --debug)
+      debug="d";
+      debug_flag="--debug";
+      ;;
+    --cxx)
+      echo $CXX
+      ;;
+    --libs)
+      echo " -L$prefix/lib -ldba@DEBUG_SUFFIX@ @DL_LINK@"
+      ;;
+    --cxxflags)
+      echo "@DBA_COMPAT_GCC_FLAGS@ -I$prefix/include"
+      ;;
+    --csv-libs)
+      echo "-L$prefix/lib -ldbacsv@DEBUG_SUFFIX@ -ldba@DEBUG_SUFFIX@"
+      ;;
+    --csv-cxxflags)
+      echo "@DBA_COMPAT_GCC_FLAGS@ -I$prefix/include"
+      ;;
+    --xml-libs)
+      echo "-L$prefix/lib -ldbaxml@DEBUG_SUFFIX@ -ldba@DEBUG_SUFFIX@ @xml2_LIBS@"
+      ;;
+    --xml-cxxflags)
+      echo "-I$prefix/include @xml2_CXXFLAGS@"
+      ;;
+    --test-libs)
+      echo " -L$prefix/lib -ldbatest@DEBUG_SUFFIX@ -ldba@DEBUG_SUFFIX@ @CPPUNIT_LIBS@"
+      ;;
+    --test-cxxflags)
+      echo "@DBA_COMPAT_GCC_FLAGS@ -I$prefix/include @CPPUNIT_CFLAGS@"
+      ;;
+    *)
+      usage 1 1>&2
+      ;;
+  esac
+  shift
+done

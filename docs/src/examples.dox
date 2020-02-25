@@ -1,0 +1,54 @@
+/**
+@page dba_example_inheritance Inheritance
+@include inheritance.cpp
+*/
+
+/**
+@page dba_example_quickstart Quickstart
+@include quickstart.cpp
+*/
+
+/**
+@page dba_example_bind Bind variable to stream
+@include bind.cpp
+*/
+
+/**
+@page dba_example_bindstb Store field members with parent object
+@include bindstb.cpp
+*/
+
+/**
+@page dba_example_csv_auto CSV with automatic mappigs
+@include csv_auto.cpp
+*/
+
+/**
+@page dba_example_csv_manual CSV with manual mappigs
+@include csv_manual.cpp
+*/
+
+/**
+@page dba_example_filter Custom filter
+@include filter.cpp
+*/
+
+/**
+@page dba_example_idlock Cloning objects
+@include idlock.cpp
+*/
+
+/**
+@page dba_example_sublists Storing agregations
+@include sublists.cpp
+*/
+
+/**
+@page dba_example_transaction Transaction support
+@include transaction.cpp
+*/
+
+/**
+@page dba_example_queries Parameterized SQL statements
+@include queries.cpp
+*/

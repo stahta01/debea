@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<makefile>
+  <include file="presets/baseprj.bkl" once="1"/>
+  <include file="presets/syslibs.bkl" once="1"/>
+
+  <set var="PRODUCT_VERSION">1.4.2</set>
+  <set var="PRODUCT_NAME">Debea Library</set>
+  
+  <!-- compiler and linker flags for plugins -->
+  <if cond="FORMAT=='autoconf'">
+    <option name="ODBC_LIBS"/>
+    <option name="ODBC_CFLAGS"/>
+    <option name="xml2_LIBS"/>
+    <option name="xml2_CXXFLAGS"/>
+  </if>
+  
+  <!-- Aviod matrix of msvc6prj configurations for all possibile options values
+        related to optional components -->
+  <if cond="FORMAT_SUPPORTS_CONDITIONS=='0'">
+    <set var="PGSQL">0</set>
+    <set var="SQLITE3">0</set>
+    <set var="CSV">1</set>
+    <set var="XML">0</set>
+    <set var="ODBC">1</set>
+    <set var="SQL_DEBUG">0</set>
+    <set var="DBA_COMPAT_1_0">0</set>
+    <set var="TESTS">0</set>
+    <set var="DOC_TYPE">doc</set>
+  </if>
+
+  <if cond="FORMAT_SUPPORTS_CONDITIONS=='1'">
+    <option name="PGSQL">
+      <values>0,1</values>
+      <default-value>0</default-value>
+      <description>Set to 1 to build postgresql driver</description>
+    </option>
+    <option name="SQLITE3">
+      <values>0,1</values>
+      <default-value>0</default-value>
+      <description>Set to 1 to build SQLLite3 driver</description>
+    </option>
+    <option name="CSV">
+      <values>0,1</values>
+      <default-value>0</default-value>
+      <description>Set to 1 to build support for csv file format</description>
+    </option>
+    <option name="XML">
+      <values>0,1</values>
+      <default-value>0</default-value>
+      <description>Set to 1 to build support for xml file format</description>
+    </option>
+    <option name="ODBC">
+      <values>0,1</values>
+      <default-value>0</default-value>
+      <description>Set to 1 to build ODBC dba driver</description>
+    </option>
+  
+    <option name="SQL_DEBUG">
+      <values>0,1</values>
+      <default-value>0</default-value>
+      <description>If set to 1 then SQL queries are printed to stderr</description>
+    </option>
+    
+    <option name="DBA_COMPAT_1_0">
+      <values>0,1</values>
+      <default-value>0</default-value>
+      <description>Compile in dba 1.0 compatibile API</description>
+    </option>
+  
+    <option name="DOC_TYPE">
+      <default-value>doc</default-value>
+      <description>'doc' for local documentation generation, 'web' for website</description>
+    </option>
+  </if>
+  
+<!--   <option name="DL_LINK"/> -->
+
+  <set var="sql_debug_def">
+    <if cond="SQL_DEBUG=='1'">DBA_QUERY_DEBUG</if>
+  </set>
+  <set var="1_0_compat">
+    <if cond="DBA_COMPAT_1_0=='1'">DBA_COMPAT_1_0</if>
+  </set>
+  <set var="define_shared">
+    <if cond="SHARED=='1'">DEBEA_USINGDLL</if>
+  </set>
+  <set var="CSVLIB_STATIC">
+    <if cond="CSV=='1'">dbacsv_static</if>
+  </set>
+  <set var="XMLLIB_STATIC">
+    <if cond="XML=='1'">dbaxml_static</if>
+  </set>
+  <set var="CSVLIB_DYNAMIC">
+    <if cond="CSV=='1'">dbacsv_dynamic</if>
+  </set>
+  <set var="XMLLIB_DYNAMIC">
+    <if cond="XML=='1'">dbaxml_dynamic</if>
+  </set>
+  
+  <!-- example settings -->
+
+  <!-- 
+    set path to libdba. If builddir is relative
+    then set it relative two levels up
+    For MSW go additionally into deep into debug\confname
+  -->
+  <set var="DBA_BUILDDIR">
+     <if cond="BUILDDIR=='.'">..$(DIRSEP)..</if>
+     <if cond="BUILDDIR!='.'">$(BUILDDIR)</if>
+  </set>
+
+  <if cond="FORMAT in ['msvc6prj','msvs2003prj','msvs2005prj']">
+    <set var="DBA_BUILDDIR">..$(DIRSEP)..$(DIRSEP)$(BUILDDIR)</set>
+  </if>
+
+  <template id="example" template_append="exebase">
+    <app-type>console</app-type>
+    <!-- always relative to given example -->
+    <include>$(SRCDIR)$(DIRSEP)..$(DIRSEP)..</include>
+    <define>$(substituteFromDict(PGSQL,{'0':'','1':'TEST_POSTGRES'}))</define>
+    <define>$(substituteFromDict(SQLITE3,{'0':'','1':'TEST_SQLITE3'}))</define>
+    <define>$(substituteFromDict(ODBC,{'0':'','1':'TEST_ODBC'}))</define>
+    <define>$(substituteFromDict(CSV,{'0':'','1':'TEST_CSV'}))</define>
+    <define>$(substituteFromDict(XML,{'0':'','1':'TEST_XML'}))</define>
+    <define>$(1_0_compat)</define>
+    <lib-path>$(DBA_BUILDDIR)</lib-path>
+    <sys-lib>dba$(LIBDEBUGSUFFIX)</sys-lib>
+<!--    <sys-lib>$(DL_LINK)</sys-lib>-->
+  </template>
+  
+  <template id="csv_example" template_append="example">
+    <sys-lib>dbacsv$(LIBDEBUGSUFFIX)</sys-lib>
+  </template>
+  
+  <template id="xml_example" template_append="example,libxml2-exe">
+    <sys-lib>dbaxml$(LIBDEBUGSUFFIX)</sys-lib>
+  </template>
+  
+</makefile>
