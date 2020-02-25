@@ -181,8 +181,8 @@ strip(const string& s) {
 
 string
 getWord(const string& str,unsigned int num) {
-  unsigned int start = 0;
-  unsigned int end = 0;
+  size_t start = 0;
+  size_t end = 0;
   do {
     start = end;
     start = str.find_first_not_of(" \t",start);
